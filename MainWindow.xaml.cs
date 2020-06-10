@@ -15,14 +15,14 @@ namespace TicTacToe
         private const int Size = 3;
 
         private readonly int[][] cells = new int[Size][];
-
-        private List<Cell> availableCells;
-        private Random random = new Random();
+        private readonly List<Cell> availableCells = new List<Cell>();
+        private readonly Random random = new Random();
 
         public MainWindow()
         {
             InitializeComponent();
 
+            // Voeg rijen en kolommen toe aan de grid.
             for (int i = 0; i < Size; i++)
             {
                 grid.RowDefinitions.Add(new RowDefinition());
@@ -32,45 +32,9 @@ namespace TicTacToe
             InitCells();
         }
 
-        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Label label = (Label)sender;
-            label.Content = "X";
-
-            int row = Grid.GetRow(label);
-            int col = Grid.GetColumn(label);
-            Console.WriteLine(row + "," + col);
-
-            if (cells[row][col] == 0)
-            {
-                cells[row][col] = 1;
-                availableCells.Remove(new Cell(row, col, label));
-                if (Check(1))
-                {
-                    Console.WriteLine("Gewonnen!");
-                    grid.Children.Clear();
-                    InitCells();
-                }
-                else
-                {
-                    Cell cell = availableCells[random.Next(0, availableCells.Count)];
-                    Console.WriteLine("making move: " + cell.Row + "," + cell.Col);
-                    cells[cell.Row][cell.Col] = 2;
-                    cell.Label.Content = "O";
-                    availableCells.Remove(cell);
-                    if (Check(2))
-                    {
-                        Console.WriteLine("Verloren!");
-                        //grid.Children.Clear();
-                        //InitCells();
-                    }
-                }
-            }
-        }
-
         private void InitCells()
         {
-            availableCells = new List<Cell>();
+            // Initialiseer cellen en voeg per cel een Label toe aan het Grid.
             for (int row = 0; row < Size; row++)
             {
                 cells[row] = new int[Size];
@@ -85,16 +49,60 @@ namespace TicTacToe
                     label.FontWeight = FontWeights.Bold;
                     label.MouseDown += Label_MouseDown;
 
+                    // Het Cell object en de Label hebben een referentie naar elkaar
+                    // zodat we dit kunnen gebruiken bij het maken van een zet.
+                    Cell cell = new Cell(row, col, label);
+                    label.Tag = cell;
+                    availableCells.Add(cell);
+
                     grid.Children.Add(label);
                     Grid.SetRow(label, row);
                     Grid.SetColumn(label, col);
-
-                    availableCells.Add(new Cell(row, col, label));
                 }
             }
         }
 
-        private bool Check(int i)
+        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Maak een zet als er nog niet eerder op dezelfde Label is geklikt.
+            // Als het spel hierna door kan gaan maken we een willekeurige zet.
+            Cell cell = (Cell)((Label)sender).Tag;
+            if (cells[cell.Row][cell.Col] == 0)
+            {
+                if (Set(cell, 1))
+                {
+                    Set(availableCells[random.Next(0, availableCells.Count)], 2);
+                }
+            }
+        }
+
+        private bool Set(Cell cell, int value)
+        {
+            // Zet de cel op de waarde en de Label op een X of een O.
+            Console.WriteLine("Setting " + cell + " to " + value);
+            cells[cell.Row][cell.Col] = value;
+            cell.Label.Content = value == 1 ? "X" : "O";
+
+            // Als dit leidt tot 3 op een rij heeft de gebruiker gewonnen of verloren.
+            if (Check(value))
+            {
+                GameOver(value == 1 ? "Gewonnen!" : "Verloren!");
+                return false;
+            }
+
+            // Als er geen cellen meer over zijn is het gelijkspel.
+            if (availableCells.Count == 1)
+            {
+                GameOver("Gelijkspel");
+                return false;
+            }
+
+            // En anders halen we de cel uit de List en kan het spel doorgaan.
+            availableCells.Remove(cell);
+            return true;
+        }
+
+        private bool Check(int value)
         {
             bool success;
 
@@ -104,7 +112,7 @@ namespace TicTacToe
                 success = true;
                 for (int col = 0; col < Size; col++)
                 {
-                    if (cells[row][col] != i)
+                    if (cells[row][col] != value)
                     {
                         success = false;
                         break;
@@ -123,7 +131,7 @@ namespace TicTacToe
                 success = true;
                 for (int row = 0; row < Size; row++)
                 {
-                    if (cells[row][col] != i)
+                    if (cells[row][col] != value)
                     {
                         success = false;
                         break;
@@ -138,9 +146,9 @@ namespace TicTacToe
 
             // Diagonaal (naar rechts).
             success = true;
-            for (int x = 0; x < Size; x++)
+            for (int i = 0; i < Size; i++)
             {
-                if (cells[x][x] != i)
+                if (cells[i][i] != value)
                 {
                     success = false;
                     break;
@@ -154,9 +162,9 @@ namespace TicTacToe
 
             // Diagonaal (naar links).
             success = true;
-            for (int x = Size - 1; x >= 0; x--)
+            for (int i = Size - 1; i >= 0; i--)
             {
-                if (cells[x][Size - x - 1] != i)
+                if (cells[i][Size - i - 1] != value)
                 {
                     success = false;
                     break;
@@ -172,6 +180,15 @@ namespace TicTacToe
             return false;
         }
 
+        private void GameOver(string message)
+        {
+            // Toon bericht, maak de cellen leeg en initialiseer ze opnieuw.
+            MessageBox.Show(message, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            availableCells.Clear();
+            grid.Children.Clear();
+            InitCells();
+        }
+
         private class Cell
         {
             public Cell(int row, int col, Label label)
@@ -181,20 +198,9 @@ namespace TicTacToe
                 Label = label;
             }
 
-            // Equals() and GetHashCode() zijn voor het verwijderen van cellen uit availableCells.
-
-            public override bool Equals(object obj)
+            public override string ToString()
             {
-                if (obj is Cell cell)
-                {
-                    return Row == cell.Row && Col == cell.Col;
-                }
-                return false;
-            }
-
-            public override int GetHashCode()
-            {
-                return Row + Col;
+                return Row + "," + Col;
             }
 
             public int Row { get; }
