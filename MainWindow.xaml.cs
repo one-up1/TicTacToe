@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace TicTacToe
 {
@@ -14,15 +16,20 @@ namespace TicTacToe
 
         private readonly int[][] cells = new int[Size][];
 
+        private List<Cell> availableCells;
+        private Random random = new Random();
+
         public MainWindow()
         {
             InitializeComponent();
 
-            // Initialiseer alle cellen.
             for (int i = 0; i < Size; i++)
             {
-                cells[i] = new int[Size];
+                grid.RowDefinitions.Add(new RowDefinition());
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
             }
+
+            InitCells();
         }
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
@@ -32,10 +39,59 @@ namespace TicTacToe
 
             int row = Grid.GetRow(label);
             int col = Grid.GetColumn(label);
+            Console.WriteLine(row + "," + col);
 
-            cells[row][col] = 1;
+            if (cells[row][col] == 0)
+            {
+                cells[row][col] = 1;
+                availableCells.Remove(new Cell(row, col, label));
+                if (Check(1))
+                {
+                    Console.WriteLine("Gewonnen!");
+                    grid.Children.Clear();
+                    InitCells();
+                }
+                else
+                {
+                    Cell cell = availableCells[random.Next(0, availableCells.Count)];
+                    Console.WriteLine("making move: " + cell.Row + "," + cell.Col);
+                    cells[cell.Row][cell.Col] = 2;
+                    cell.Label.Content = "O";
+                    availableCells.Remove(cell);
+                    if (Check(2))
+                    {
+                        Console.WriteLine("Verloren!");
+                        //grid.Children.Clear();
+                        //InitCells();
+                    }
+                }
+            }
+        }
 
-            Check(1);
+        private void InitCells()
+        {
+            availableCells = new List<Cell>();
+            for (int row = 0; row < Size; row++)
+            {
+                cells[row] = new int[Size];
+                for (int col = 0; col < Size; col++)
+                {
+                    Label label = new Label();
+                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    label.VerticalContentAlignment = VerticalAlignment.Center;
+                    label.BorderThickness = new Thickness(2);
+                    label.BorderBrush = Brushes.Black;
+                    label.FontSize = 72;
+                    label.FontWeight = FontWeights.Bold;
+                    label.MouseDown += Label_MouseDown;
+
+                    grid.Children.Add(label);
+                    Grid.SetRow(label, row);
+                    Grid.SetColumn(label, col);
+
+                    availableCells.Add(new Cell(row, col, label));
+                }
+            }
         }
 
         private bool Check(int i)
@@ -114,6 +170,38 @@ namespace TicTacToe
 
             Console.WriteLine("No success");
             return false;
+        }
+
+        private class Cell
+        {
+            public Cell(int row, int col, Label label)
+            {
+                Row = row;
+                Col = col;
+                Label = label;
+            }
+
+            // Equals() and GetHashCode() zijn voor het verwijderen van cellen uit availableCells.
+
+            public override bool Equals(object obj)
+            {
+                if (obj is Cell cell)
+                {
+                    return Row == cell.Row && Col == cell.Col;
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return Row + Col;
+            }
+
+            public int Row { get; }
+
+            public int Col { get; }
+
+            public Label Label { get; }
         }
     }
 }
