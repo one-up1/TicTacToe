@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Width="400"
-        Height="400"
+        Width="350"
+        Height="350"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
         Title="Boter, Kaas en Eieren">
     
     <Grid>
@@ -26,55 +28,100 @@
             Grid.Row="0"
             Grid.Column="0"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="0"
             Grid.Column="1"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="0"
             Grid.Column="2"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="1"
             Grid.Column="0"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="1"
             Grid.Column="1"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="1"
             Grid.Column="2"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="2"
             Grid.Column="0"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="2"
             Grid.Column="1"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
         <Label
             Grid.Row="2"
             Grid.Column="2"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            FontSize="72"
+            FontWeight="Bold"
+            MouseDown="Label_MouseDown" />
 
     </Grid>
     
